@@ -11,6 +11,7 @@ import android.provider.ContactsContract;
 import android.support.v4.app.LoaderManager;
 import android.util.Log;
 
+import com.demo.MainActivity;
 import com.demo.provider.message.MessageColumns;
 import com.demo.provider.message.MessageContentValues;
 import com.demo.provider.message.MessageSelection;
@@ -31,7 +32,7 @@ public class UpdateService extends IntentService  {
      */
     String message;
     String phno;
-
+    boolean is_last;
     private static final String[] PROJECTION =
             {
                     ContactsContract.Contacts._ID,
@@ -50,8 +51,10 @@ public class UpdateService extends IntentService  {
     @Override
     protected void onHandleIntent(Intent intent) {
             message=intent.getStringExtra("message");
+
             phno=intent.getStringExtra("phno");
-        Log.d("Service Started", "details" + message + "_" + phno);
+        is_last=intent.getBooleanExtra("is_last",false);
+        Log.d("Service Started", "details" + message + "_" + phno+is_last);
         Cursor mCCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 PROJECTION, null, null, null);
 
@@ -129,6 +132,13 @@ private void saveData(Cursor data)
         else {
             getContentResolver().insert(MessageColumns.CONTENT_URI, values.values());
         }
+        if(is_last)
+        {
+            Intent req_intent=new Intent(MainActivity.INSERT_BROADCAST_ACTION);
+
+
+            sendBroadcast(req_intent);
+        }
     }
     private boolean checkIfSenderExistAlready(String phne)
     {
@@ -145,4 +155,5 @@ private void saveData(Cursor data)
             return false;
         }
     }
+
 }

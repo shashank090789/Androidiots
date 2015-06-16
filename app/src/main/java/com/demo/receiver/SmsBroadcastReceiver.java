@@ -47,6 +47,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
             Intent updateService=new Intent(context, UpdateService.class);
             updateService.putExtra("message",smsBody);
             updateService.putExtra("phno",address);
+            updateService.putExtra("is_last", false);
             context.startService(updateService);
             //this will update the UI with message
 //            SmsActivity inst = SmsActivity.instance();
